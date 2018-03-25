@@ -1,14 +1,16 @@
-package q1.BlockingUnboundedQueue;
+package q1.LockFreeUnboundedQueue;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Node<T> {
     private final T value;
     private long  enqTime;
     private long deqTime;
-    private Node next;
+    private final AtomicReference<Node> next;
 
     Node(T value) {
         this.value = value;
-        next = null;
+        next = new AtomicReference<>(null);
     }
 
     public long getEnqTime() {
@@ -31,11 +33,8 @@ public class Node<T> {
         return value;
     }
 
-    public Node getNext() {
+    public AtomicReference<Node> getNext() {
         return next;
     }
 
-    public void setNext(Node next) {
-        this.next = next;
-    }
 }

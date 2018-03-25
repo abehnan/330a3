@@ -1,4 +1,4 @@
-package q1.BlockingUnboundedQueue;
+package q1.LockFreeUnboundedQueue;
 
 class Main {
     public static void main(String args[]) {

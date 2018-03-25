@@ -2,12 +2,13 @@ package q1.BlockingUnboundedQueue;
 
 import java.util.concurrent.locks.ReentrantLock;
 
-public class BlockingUnboundedQueue {
-    private ReentrantLock enqLock, deqLock;
+public class BlockingQueue {
+    private final ReentrantLock enqLock;
+    private final ReentrantLock deqLock;
     private Node head, tail;
-    private static BlockingUnboundedQueue instance;
+    private static BlockingQueue instance;
 
-    private BlockingUnboundedQueue() {
+    private BlockingQueue() {
         //noinspection unchecked
         head = new Node(null);
         tail = head;
@@ -15,9 +16,9 @@ public class BlockingUnboundedQueue {
         deqLock = new ReentrantLock();
     }
 
-    public static BlockingUnboundedQueue getInstance() {
+    public static BlockingQueue getInstance() {
         if (instance == null)
-            instance = new BlockingUnboundedQueue();
+            instance = new BlockingQueue();
         return instance;
     }
 

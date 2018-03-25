@@ -1,9 +1,9 @@
-package q1.BlockingUnboundedQueue;
+package q1.LockFreeUnboundedQueue;
 
 import java.util.LinkedList;
 
 class DeqThread extends Thread {
-    private static final BlockingQueue queue = BlockingQueue.getInstance();
+    private static final LockFreeQueue queue = LockFreeQueue.getInstance();
     private final LinkedList<Node> resultList;
     private final int numItems;
     private int count;

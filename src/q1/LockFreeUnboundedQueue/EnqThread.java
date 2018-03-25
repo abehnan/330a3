@@ -1,9 +1,9 @@
-package q1.BlockingUnboundedQueue;
+package q1.LockFreeUnboundedQueue;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 class EnqThread extends Thread {
-    private static final BlockingQueue queue = BlockingQueue.getInstance();
+    private static final LockFreeQueue queue = LockFreeQueue.getInstance();
     private static final AtomicInteger idPool = new AtomicInteger(0);
     public static volatile boolean flag = true;
 
