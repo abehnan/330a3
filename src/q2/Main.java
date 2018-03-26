@@ -28,13 +28,17 @@ public class Main {
 
         // construct graph and add e random edges
         Graph graph = new Graph(n);
-        for (int i = 0; i < e; i++) {
+        int edgeCount = 0;
+        while (edgeCount < e) {
             int srcNode = ThreadLocalRandom.current().nextInt(n);
             int destNode = srcNode;
             while (destNode == srcNode) {
                 destNode = ThreadLocalRandom.current().nextInt(n);
             }
-            graph.addEdge(srcNode, destNode);
+            if (!graph.addEdge(srcNode, destNode)) {
+                continue;
+            }
+            edgeCount++;
         }
         startTime = System.currentTimeMillis();
 

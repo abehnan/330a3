@@ -16,9 +16,13 @@ class Graph {
         }
     }
 
-    public void addEdge(int srcID, int destID) {
+    public boolean addEdge(int srcID, int destID) {
+        if (adjArray.get(srcID).contains(destID)) {
+            return false;
+        }
         adjArray.get(srcID).add(destID);
         adjArray.get(destID).add(srcID);
+        return true;
     }
 
     public boolean containsEdge(int srcID, int destID) {
