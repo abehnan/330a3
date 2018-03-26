@@ -1,23 +1,19 @@
 package q2;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 class Node {
-    private final int id;
-    private int color;
+    private final AtomicInteger color;
 
-    Node(int id) {
-        this.id = id;
-        this.color = 0;
-    }
-
-    public int getId() {
-        return id;
+    Node() {
+        color = new AtomicInteger(0);
     }
 
     public int getColor() {
-        return color;
+        return color.get();
     }
 
     public void setColor(int color) {
-        this.color = color;
+        this.color.set(color);
     }
 }

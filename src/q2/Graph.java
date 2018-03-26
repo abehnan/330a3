@@ -2,6 +2,7 @@ package q2;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicInteger;
 
 class Graph {
     private final ArrayList<ArrayList<Integer>> adjArray;
@@ -10,14 +11,14 @@ class Graph {
     Graph(int size) {
         adjArray = new ArrayList<>(size);
         nodes = new ArrayList<>(size);
-        for (int i = 0; i < size; i++) {
-            nodes.add(new Node(i));
+        for (AtomicInteger i = new AtomicInteger(); i.get() < size; i.getAndIncrement()) {
+            nodes.add(new Node());
             adjArray.add(new ArrayList<>());
         }
     }
 
     public boolean addEdge(int srcID, int destID) {
-        if (adjArray.get(srcID).contains(destID)) {
+        if (containsEdge(srcID, destID)) {
             return false;
         }
         adjArray.get(srcID).add(destID);
@@ -25,7 +26,7 @@ class Graph {
         return true;
     }
 
-    public boolean containsEdge(int srcID, int destID) {
+    private boolean containsEdge(int srcID, int destID) {
         return adjArray.get(srcID).contains(destID) &&
                 adjArray.get(destID).contains(srcID);
     }
@@ -34,16 +35,17 @@ class Graph {
         nodes.get(nodeID).setColor(getSmallestNodeColor(nodeID));
     }
 
-    public int getNodeColor(int nodeID) {
+    public boolean hasConflict(int nodeID) {
+        ArrayList<Integer> adjNodes = adjArray.get(nodeID);
+        ArrayList<Integer> adjColors = new ArrayList<>(adjNodes.size());
+        for (Integer node : adjNodes) {
+            adjColors.add(getNodeColor(node));
+        }
+        return adjColors.contains(getNodeColor(nodeID));
+    }
+
+    private int getNodeColor(int nodeID) {
         return nodes.get(nodeID).getColor();
-    }
-
-    public ArrayList<Integer> getAdjacentNodes(int nodeID) {
-        return adjArray.get(nodeID);
-    }
-
-    public int getSize() {
-        return nodes.size();
     }
 
     public int getMaxDegree() {
@@ -70,7 +72,7 @@ class Graph {
         ArrayList<Integer> adjNodes = adjArray.get(nodeID);
         ArrayList<Integer> adjColors = new ArrayList<>(adjNodes.size());
         for (Integer node : adjNodes) {
-            adjColors.add(nodes.get(node).getColor());
+            adjColors.add(getNodeColor(node));
         }
         Collections.sort(adjColors);
         for (Integer color : adjColors) {
