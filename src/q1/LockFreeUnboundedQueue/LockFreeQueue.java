@@ -3,8 +3,8 @@ package q1.LockFreeUnboundedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class LockFreeQueue<T> {
-    private final AtomicReference<Node> head;
-    private final AtomicReference<Node> tail;
+    private final AtomicReference<Node<T>> head;
+    private final AtomicReference<Node<T>> tail;
 
     LockFreeQueue() {
         Node<T> sentinel = new Node<>(null);
@@ -15,11 +15,10 @@ public class LockFreeQueue<T> {
     public void enq(T value) {
         Node<T> node = new Node<>(value);
         while (true) {
-            Node last = tail.get();
-            Node next = (Node) last.getNext().get();
+            Node<T> last = tail.get();
+            Node<T> next = (Node<T>) last.getNext().get();
             if (last == tail.get()) {
                 if (next == null) {
-                    //noinspection unchecked
                     if (last.getNext().compareAndSet(next, node)) {
                         tail.compareAndSet(last, node);
                         node.setEnqTime(System.currentTimeMillis());
@@ -32,11 +31,11 @@ public class LockFreeQueue<T> {
         }
     }
 
-    public Node deq() throws Exception {
+    public Node<T> deq() throws Exception {
         while(true) {
-            Node first = head.get();
-            Node last = tail.get();
-            Node next = (Node) first.getNext().get();
+            Node<T> first = head.get();
+            Node<T> last = tail.get();
+            Node<T> next = (Node<T>) first.getNext().get();
             if (first == head.get()) {
                 if (first == last) {
                     if (next == null) {

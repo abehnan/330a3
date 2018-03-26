@@ -6,7 +6,7 @@ public class Node<T> {
     private final T value;
     private long  enqTime;
     private long deqTime;
-    private final AtomicReference<Node> next;
+    private final AtomicReference<Node<T>> next;
 
     Node(T value) {
         this.value = value;
@@ -33,7 +33,7 @@ public class Node<T> {
         return value;
     }
 
-    public AtomicReference<Node> getNext() {
+    public AtomicReference<Node<T>> getNext() {
         return next;
     }
 

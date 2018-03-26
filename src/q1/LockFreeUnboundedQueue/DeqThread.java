@@ -3,8 +3,8 @@ package q1.LockFreeUnboundedQueue;
 import java.util.LinkedList;
 
 class DeqThread extends Thread {
-    private final LockFreeQueue queue;
-    private final LinkedList<Node> resultList;
+    private final LockFreeQueue<Integer> queue;
+    private final LinkedList<Node<Integer>> resultList;
     private final int numItems;
     private int count;
 
@@ -16,7 +16,7 @@ class DeqThread extends Thread {
     }
 
     public void run() {
-        Node result;
+        Node<Integer> result;
         while (count < numItems) {
             try {
                 result = queue.deq();
@@ -39,7 +39,7 @@ class DeqThread extends Thread {
     }
 
     public void printValues() {
-        for (Node n : resultList) {
+        for (Node<Integer> n : resultList) {
             System.out.println("id: " + n.getValue() + " enq: " + n.getEnqTime() + " deq: " + n.getDeqTime());
         }
     }

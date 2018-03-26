@@ -5,11 +5,10 @@ import java.util.concurrent.locks.ReentrantLock;
 public class BlockingQueue<T> {
     private final ReentrantLock enqLock;
     private final ReentrantLock deqLock;
-    private Node head, tail;
+    private Node<T> head, tail;
 
     BlockingQueue() {
-        //noinspection unchecked
-        head = new Node(null);
+        head = new Node<T>(null);
         tail = head;
         enqLock = new ReentrantLock();
         deqLock = new ReentrantLock();
@@ -27,8 +26,8 @@ public class BlockingQueue<T> {
         }
     }
 
-    public Node deq() throws Exception {
-        Node result;
+    public Node<T> deq() throws Exception {
+        Node<T> result;
         deqLock.lock();
         try {
             if (head.getNext() == null) {

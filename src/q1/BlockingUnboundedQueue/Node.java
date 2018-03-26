@@ -4,7 +4,7 @@ public class Node<T> {
     private final T value;
     private long  enqTime;
     private long deqTime;
-    private Node next;
+    private Node<T> next;
 
     Node(T value) {
         this.value = value;
@@ -31,11 +31,11 @@ public class Node<T> {
         return value;
     }
 
-    public Node getNext() {
+    public Node<T> getNext() {
         return next;
     }
 
-    public void setNext(Node next) {
+    public void setNext(Node<T> next) {
         this.next = next;
     }
 }
