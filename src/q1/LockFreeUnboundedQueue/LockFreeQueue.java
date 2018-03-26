@@ -2,7 +2,7 @@ package q1.LockFreeUnboundedQueue;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public class LockFreeQueue<T> {
+class LockFreeQueue<T> {
     private final AtomicReference<Node<T>> head;
     private final AtomicReference<Node<T>> tail;
 
@@ -16,10 +16,10 @@ public class LockFreeQueue<T> {
         Node<T> node = new Node<>(value);
         while (true) {
             Node<T> last = tail.get();
-            Node<T> next = (Node<T>) last.getNext().get();
+            Node<T> next = last.getNext().get();
             if (last == tail.get()) {
                 if (next == null) {
-                    if (last.getNext().compareAndSet(next, node)) {
+                    if (last.getNext().compareAndSet(null, node)) {
                         tail.compareAndSet(last, node);
                         node.setEnqTime(System.currentTimeMillis());
                         return;
@@ -35,7 +35,7 @@ public class LockFreeQueue<T> {
         while(true) {
             Node<T> first = head.get();
             Node<T> last = tail.get();
-            Node<T> next = (Node<T>) first.getNext().get();
+            Node<T> next = first.getNext().get();
             if (first == head.get()) {
                 if (first == last) {
                     if (next == null) {

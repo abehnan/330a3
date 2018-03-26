@@ -42,10 +42,10 @@ class Main {
         EnqThread.flag = false;
         long totalTime = System.currentTimeMillis() - startTime;
 
-        System.out.println("total running time: " + totalTime);
         for (DeqThread dt: deqThreads) {
-            System.out.println();
             dt.printValues();
+            System.out.println();
         }
+        System.out.println("total running time: " + totalTime);
     }
 }

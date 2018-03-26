@@ -2,13 +2,13 @@ package q1.BlockingUnboundedQueue;
 
 import java.util.concurrent.locks.ReentrantLock;
 
-public class BlockingQueue<T> {
+class BlockingQueue<T> {
     private final ReentrantLock enqLock;
     private final ReentrantLock deqLock;
     private Node<T> head, tail;
 
     BlockingQueue() {
-        head = new Node<T>(null);
+        head = new Node<>(null);
         tail = head;
         enqLock = new ReentrantLock();
         deqLock = new ReentrantLock();
