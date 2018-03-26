@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 class DeqThread extends Thread {
     private final BlockingQueue<Integer> queue;
-    private final LinkedList<Node<Integer>> resultList;
+    private static final LinkedList<Node<Integer>> resultList = new LinkedList<>();
     private final int numItems;
     private int count;
 
@@ -12,7 +12,6 @@ class DeqThread extends Thread {
         this.numItems = numItems;
         this.queue = queue;
         count = 0;
-        resultList = new LinkedList<>();
     }
 
     public void run() {
@@ -38,9 +37,49 @@ class DeqThread extends Thread {
         }
     }
 
-    public void printValues() {
-        for (Node<Integer> n : resultList) {
-            System.out.println("id: " + n.getValue() + " enq: " + n.getEnqTime() + " deq: " + n.getDeqTime());
+    public static void printValues() {
+        int enqPointer = 0, deqPointer = 0;
+        System.out.println("[timestamp] [operation] [id]");
+        while (enqPointer < resultList.size() && deqPointer < resultList.size()) {
+            long enqTime, deqTime;
+            try {
+                enqTime = resultList.get(enqPointer).getEnqTime();
+            } catch(NullPointerException e) {
+                enqPointer++;
+                continue;
+            }
+            try {
+                deqTime = resultList.get(deqPointer).getDeqTime();
+            } catch(NullPointerException e) {
+                deqPointer++;
+                continue;
+            }
+            if (enqTime <= deqTime) {
+                System.out.println(resultList.get(enqPointer).getEnqTime() + " enq " + resultList.get(enqPointer).getValue());
+                enqPointer++;
+            }
+            else {
+                System.out.println(resultList.get(deqPointer).getDeqTime() + " deq " + resultList.get(deqPointer).getValue());
+                deqPointer++;
+            }
+
         }
+        while (enqPointer < resultList.size() && deqPointer >= resultList.size()) {
+            try {
+                System.out.println(resultList.get(enqPointer).getEnqTime() + " enq " + resultList.get(enqPointer).getValue());
+                enqPointer++;
+            } catch (NullPointerException e) {
+                enqPointer++;
+            }
+        }
+        while(enqPointer >= resultList.size() && deqPointer < resultList.size()) {
+            try {
+                System.out.println(resultList.get(deqPointer).getDeqTime() + " deq " + resultList.get(deqPointer).getValue());
+                deqPointer++;
+            } catch (NullPointerException e) {
+                deqPointer++;
+            }
+        }
+        System.out.println("[timestamp] [operation] [id]");
     }
 }
