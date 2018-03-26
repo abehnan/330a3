@@ -3,13 +3,17 @@ package q1.BlockingUnboundedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 class EnqThread extends Thread {
-    private static final BlockingQueue queue = BlockingQueue.getInstance();
+    private final BlockingQueue<Integer> queue;
     private static final AtomicInteger idPool = new AtomicInteger(0);
     public static volatile boolean flag = true;
 
+    EnqThread(BlockingQueue<Integer> queue) {
+        this.queue = queue;
+    }
+
     public void run() {
         while (flag) {
-            int currentID = idPool.getAndIncrement();
+            Integer currentID = idPool.getAndIncrement();
             queue.enq(currentID);
             try {
                 Thread.sleep(10);

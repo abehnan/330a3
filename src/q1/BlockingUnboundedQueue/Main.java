@@ -3,6 +3,7 @@ package q1.BlockingUnboundedQueue;
 class Main {
     public static void main(String args[]) {
 
+        BlockingQueue<Integer> queue = new BlockingQueue<>();
         int p = -1, q = -1, n = -1;
         long startTime;
 
@@ -21,13 +22,13 @@ class Main {
         startTime = System.currentTimeMillis();
         EnqThread[] enqThreads = new EnqThread[p];
         for (int i = 0; i < enqThreads.length; i++) {
-            enqThreads[i] = new EnqThread();
+            enqThreads[i] = new EnqThread(queue);
             enqThreads[i].start();
         }
 
         DeqThread[] deqThreads = new DeqThread[q];
         for (int i = 0; i <deqThreads.length; i++) {
-            deqThreads[i] = new DeqThread(n);
+            deqThreads[i] = new DeqThread(queue, n);
             deqThreads[i].start();
         }
 
@@ -46,6 +47,5 @@ class Main {
             System.out.println();
             dt.printValues();
         }
-
     }
 }

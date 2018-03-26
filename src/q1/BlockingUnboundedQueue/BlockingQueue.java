@@ -2,13 +2,12 @@ package q1.BlockingUnboundedQueue;
 
 import java.util.concurrent.locks.ReentrantLock;
 
-public class BlockingQueue {
+public class BlockingQueue<T> {
     private final ReentrantLock enqLock;
     private final ReentrantLock deqLock;
     private Node head, tail;
-    private static BlockingQueue instance;
 
-    private BlockingQueue() {
+    BlockingQueue() {
         //noinspection unchecked
         head = new Node(null);
         tail = head;
@@ -16,16 +15,10 @@ public class BlockingQueue {
         deqLock = new ReentrantLock();
     }
 
-    public static BlockingQueue getInstance() {
-        if (instance == null)
-            instance = new BlockingQueue();
-        return instance;
-    }
-
-    public void enq(int value) {
+    public void enq(T value) {
         enqLock.lock();
         try {
-            Node<Integer> e = new Node<>(value);
+            Node<T> e = new Node<>(value);
             e.setEnqTime(System.currentTimeMillis());
             tail.setNext(e);
             tail = e;
@@ -48,6 +41,5 @@ public class BlockingQueue {
             deqLock.unlock();
         }
         return result;
-
     }
 }

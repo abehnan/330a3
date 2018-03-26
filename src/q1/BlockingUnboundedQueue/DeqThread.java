@@ -3,13 +3,14 @@ package q1.BlockingUnboundedQueue;
 import java.util.LinkedList;
 
 class DeqThread extends Thread {
-    private static final BlockingQueue queue = BlockingQueue.getInstance();
+    private final BlockingQueue queue;
     private final LinkedList<Node> resultList;
     private final int numItems;
     private int count;
 
-    DeqThread(int numItems) {
+    DeqThread(BlockingQueue queue, int numItems) {
         this.numItems = numItems;
+        this.queue = queue;
         count = 0;
         resultList = new LinkedList<>();
     }
