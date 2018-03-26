@@ -2,7 +2,6 @@ package q2;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.concurrent.atomic.AtomicInteger;
 
 class Graph {
     private final ArrayList<ArrayList<Integer>> adjArray;
@@ -11,10 +10,14 @@ class Graph {
     Graph(int size) {
         adjArray = new ArrayList<>(size);
         nodes = new ArrayList<>(size);
-        for (AtomicInteger i = new AtomicInteger(); i.get() < size; i.getAndIncrement()) {
+        for (int i = 0; i < size; i++) {
             nodes.add(new Node());
             adjArray.add(new ArrayList<>());
         }
+    }
+
+    public int getSize() {
+        return nodes.size();
     }
 
     public boolean addEdge(int srcID, int destID) {
@@ -35,13 +38,14 @@ class Graph {
         nodes.get(nodeID).setColor(getSmallestNodeColor(nodeID));
     }
 
-    public boolean hasConflict(int nodeID) {
+    public boolean hasConflictingColor(int nodeID) {
         ArrayList<Integer> adjNodes = adjArray.get(nodeID);
-        ArrayList<Integer> adjColors = new ArrayList<>(adjNodes.size());
-        for (Integer node : adjNodes) {
-            adjColors.add(getNodeColor(node));
+        for (Integer adjNodeID : adjNodes) {
+            if (getNodeColor(nodeID) == getNodeColor(adjNodeID) && adjNodeID < nodeID) {
+                return true;
+            }
         }
-        return adjColors.contains(getNodeColor(nodeID));
+        return false;
     }
 
     private int getNodeColor(int nodeID) {
