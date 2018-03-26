@@ -1,6 +1,7 @@
 package q2;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 class Graph {
     private final ArrayList<ArrayList<Integer>> adjArray;
@@ -25,8 +26,8 @@ class Graph {
                 adjArray.get(destID).contains(srcID);
     }
 
-    public void setNodeColor(int nodeID, int color) {
-        nodes.get(nodeID).setColor(color);
+    public void setNodeColor(int nodeID) {
+        nodes.get(nodeID).setColor(getSmallestNodeColor(nodeID));
     }
 
     public int getNodeColor(int nodeID) {
@@ -41,4 +42,38 @@ class Graph {
         return nodes.size();
     }
 
+    public int getMaxDegree() {
+        int maxDegree = 0;
+        for (ArrayList<Integer> aList : adjArray) {
+            if (aList.size() > maxDegree) {
+                maxDegree = aList.size();
+            }
+        }
+        return maxDegree;
+    }
+
+    public int getMaxColor() {
+        ArrayList<Integer> colors = new ArrayList<>();
+        for (Node n : nodes) {
+            colors.add(n.getColor());
+        }
+        Collections.sort(colors);
+        return colors.get(colors.size() - 1);
+    }
+
+    private int getSmallestNodeColor(int nodeID) {
+        int minColor = 1;
+        ArrayList<Integer> adjNodes = adjArray.get(nodeID);
+        ArrayList<Integer> adjColors = new ArrayList<>(adjNodes.size());
+        for (Integer node : adjNodes) {
+            adjColors.add(nodes.get(node).getColor());
+        }
+        Collections.sort(adjColors);
+        for (Integer color : adjColors) {
+            if (color == minColor) {
+                minColor++;
+            }
+        }
+        return minColor;
+    }
 }
