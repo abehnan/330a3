@@ -21,6 +21,11 @@ class DeqThread extends Thread {
             try {
                 result = queue.deq();
             } catch(Exception e) {
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException ex) {
+                    e.printStackTrace();
+                }
                 continue;
             }
             count++;

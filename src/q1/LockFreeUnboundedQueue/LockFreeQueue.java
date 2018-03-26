@@ -2,25 +2,18 @@ package q1.LockFreeUnboundedQueue;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public class LockFreeQueue {
+public class LockFreeQueue<T> {
     private final AtomicReference<Node> head;
     private final AtomicReference<Node> tail;
-    private static LockFreeQueue instance;
 
-    private LockFreeQueue() {
-        Node<Integer> sentinel = new Node<>(null);
+    LockFreeQueue() {
+        Node<T> sentinel = new Node<>(null);
         head = new AtomicReference<>(sentinel);
         tail = new AtomicReference<>(sentinel);
     }
 
-    public static LockFreeQueue getInstance() {
-        if (instance == null)
-            instance = new LockFreeQueue();
-        return instance;
-    }
-
-    public void enq(int value) {
-        Node<Integer> node = new Node<>(value);
+    public void enq(T value) {
+        Node<T> node = new Node<>(value);
         while (true) {
             Node last = tail.get();
             Node next = (Node) last.getNext().get();
@@ -46,9 +39,9 @@ public class LockFreeQueue {
             Node next = (Node) first.getNext().get();
             if (first == head.get()) {
                 if (first == last) {
-                    if (next == null)
+                    if (next == null) {
                         throw new Exception();
-
+                    }
                     tail.compareAndSet(last, next);
                 } else {
                     if (head.compareAndSet(first, next)) {

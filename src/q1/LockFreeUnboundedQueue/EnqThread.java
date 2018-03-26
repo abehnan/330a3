@@ -3,9 +3,13 @@ package q1.LockFreeUnboundedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 class EnqThread extends Thread {
-    private static final LockFreeQueue queue = LockFreeQueue.getInstance();
+    private final LockFreeQueue<Integer> queue;
     private static final AtomicInteger idPool = new AtomicInteger(0);
     public static volatile boolean flag = true;
+
+    EnqThread(LockFreeQueue<Integer> queue) {
+        this.queue = queue;
+    }
 
     public void run() {
         while (flag) {
