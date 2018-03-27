@@ -6,24 +6,6 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 
 class Main {
 
-    // partitions an ArrayLists of integers into n ArrayLists
-    private static ArrayList<ArrayList<Integer>> partitionReferences(ArrayList<Integer> aList, int n) {
-        ArrayList<ArrayList<Integer>> refArray = new ArrayList<>(n);
-
-        // base case: only one thread
-        if (n == 1) {
-            refArray.set(0, aList);
-            return refArray;
-        }
-
-        int sublistSize = aList.size() / n + 1;
-        for (int start = 0; start < aList.size(); start += sublistSize) {
-            int end = Math.min(start + sublistSize, aList.size());
-            refArray.add(new ArrayList<>(aList.subList(start, end)));
-        }
-        return refArray;
-    }
-
     // returns the number of non null references in an AtomicReferenceArray
     private static int getRefArraySize(AtomicReferenceArray<Integer> refs) {
         int size = 0;
@@ -37,34 +19,31 @@ class Main {
 
     // multithreaded assign algorithm
     private static void assign(Graph graph, int numThreads, AtomicReferenceArray<Integer> refs) {
-
-        // partition references
-        ArrayList<Integer> refArrayList = new ArrayList<>(refs.length());
-        for (int i = 0; i < refs.length(); i++) {
+        int size = getRefArraySize(refs);
+        if (numThreads == 1) {
+            AssignThread thread = new AssignThread(graph, refs, 0, size);
+            thread.start();
             try {
-                refArrayList.add(refs.get(i));
-            } catch(NullPointerException ignored) {}
-        }
-        ArrayList<ArrayList<Integer>> threadConfigs = partitionReferences(refArrayList, numThreads);
-
-        // start assign threads
-        ArrayList<AssignThread> assignThreads = new ArrayList<>(numThreads);
-        for (int i = 0; i < threadConfigs.size(); i++) {
-            Integer[] refArray = new Integer[threadConfigs.get(i).size()];
-            for (int j = 0; j < refArray.length; j++) {
-                refArray[j] = threadConfigs.get(i).get(j);
-            }
-            AtomicReferenceArray<Integer> config = new AtomicReferenceArray<>(refArray);
-            assignThreads.add(new AssignThread(graph, config, getRefArraySize(config)));
-            assignThreads.get(i).start();
-        }
-
-        // join assign threads
-        for (AssignThread assignThread : assignThreads) {
-            try {
-                assignThread.join();
+                thread.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            }
+        } else {
+            ArrayList<AssignThread> threads = new ArrayList<>(numThreads);
+            int sublistSize = getRefArraySize(refs) / numThreads + 1;
+            for (int start = 0; start < size; start += sublistSize) {
+                int end = Math.min(start + sublistSize, size);
+                threads.add(new AssignThread(graph, refs, start, end));
+            }
+            for (AssignThread t : threads) {
+                t.start();
+            }
+            for (AssignThread t : threads) {
+                try {
+                    t.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -72,36 +51,34 @@ class Main {
     // multithreaded detectConflicts algorithm
     private static AtomicReferenceArray<Integer> detectConflicts(Graph graph, int numThreads, AtomicReferenceArray<Integer> refs) {
 
-        // partition references
-        ArrayList<Integer> refArrayList = new ArrayList<>(refs.length());
-        for (int i = 0; i < refs.length(); i++) {
-            try {
-                refArrayList.add(refs.get(i));
-            } catch(NullPointerException ignored) {}
-        }
-        ArrayList<ArrayList<Integer>> threadConfigs = partitionReferences(refArrayList, numThreads);
-
-        // start conflict threads
-        ArrayList<ConflictThread> conflictThreads = new ArrayList<>(numThreads);
         ArrayList<Integer> newConfig = new ArrayList<>();
-        ConflictThread.resetNewConfigIndex();
-        for (int i = 0; i < threadConfigs.size(); i++) {
-            // convert ArrayList to AtomicReferenceArray
-            Integer[] refArray = new Integer[threadConfigs.get(i).size()];
-            for (int j = 0; j < refArray.length; j++) {
-                refArray[j] = threadConfigs.get(i).get(j);
-            }
-            AtomicReferenceArray<Integer> config = new AtomicReferenceArray<>(refArray);
-            conflictThreads.add(new ConflictThread(graph, config, getRefArraySize(config), newConfig));
-            conflictThreads.get(i).start();
-        }
+        int size = getRefArraySize(refs);
 
-        // join conflict threads
-        for(ConflictThread conflictThread : conflictThreads) {
+        if (numThreads == 1) {
+            ConflictThread thread = new ConflictThread(graph, refs, 0, size, newConfig);
+            thread.start();
             try {
-                conflictThread.join();
+                thread.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            }
+
+        } else {
+            ArrayList<ConflictThread> threads = new ArrayList<>(numThreads);
+            int sublistSize = getRefArraySize(refs) / numThreads + 1;
+            for (int start = 0; start < size; start += sublistSize) {
+                int end = Math.min(start + sublistSize, size);
+                threads.add(new ConflictThread(graph, refs, start, end, newConfig));
+            }
+            for (ConflictThread t : threads) {
+                t.start();
+            }
+            for (ConflictThread t : threads) {
+                try {
+                    t.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -159,7 +136,7 @@ class Main {
         System.out.print("constructing graph...");
         Graph graph = new Graph(n);
         addEdges(graph, e);
-        System.out.println("done!\n");
+        System.out.println("done!");
 
         // set up initial conflicting node set
         AtomicReferenceArray<Integer> conflicting = new AtomicReferenceArray<>(graph.getSize());
@@ -171,7 +148,7 @@ class Main {
         long startTime = System.currentTimeMillis();
         int i = 0;
         while (getRefArraySize(conflicting) > 0) {
-            System.out.println("size of conflicting set: " + getRefArraySize(conflicting));
+            System.out.println("\nsize of conflicting set: " + getRefArraySize(conflicting));
             System.out.println("assign iteration #" + i);
             assign(graph, n, conflicting);
             System.out.println("detectConflicts iteration #" + i++);
