@@ -73,10 +73,10 @@ class Graph {
         }
 
         // debug
-        System.out.println("node with max degree: " + id);
+        System.out.println("node ID with max degree: " + id);
         System.out.println("node color: " + getNodeColor(id));
         System.out.println("adjacent nodes: " + adjArray.get(id));
-        System.out.print("adjacent colors: [");
+        System.out.print("adjacent node colors: [");
         for (int i = 0; i < adjArray.get(id).size(); i++) {
             System.out.print(getNodeColor(adjArray.get(id).get(i)));
             if (i < adjArray.get(id).size() - 1) {

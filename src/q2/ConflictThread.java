@@ -1,29 +1,33 @@
 package q2;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicReferenceArray;
+
+/*If you find that the synchronization on every operation has too much overhead, the next alternative is to give each thread its own private ArrayList, and then periodically, or at the end, dump the contents of the private ArrayLists into the main ArrayList.
+* */
 
 class ConflictThread extends Thread {
     private final Graph graph;
-    private final AtomicReferenceArray<Integer> config;
+    private final ArrayList<Integer> config;
     private final int start, end;
-    private final ArrayList<Integer> newConfig;
+    private final ArrayList<Integer> conflictingNodes;
 
-    ConflictThread(Graph graph, AtomicReferenceArray<Integer> config, int start, int end, ArrayList<Integer> newConfig) {
+    ConflictThread(Graph graph, ArrayList<Integer> config, int start, int end) {
         this.graph = graph;
         this.config = config;
         this.start = start;
         this.end = end;
-        this.newConfig = newConfig;
+        this.conflictingNodes = new ArrayList<>();
+    }
+
+    public ArrayList<Integer> getConflictingNodes() {
+        return conflictingNodes;
     }
 
     public void run() {
         for (int i = start; i < end; i++) {
-            try {
-                if (graph.hasConflictingColor(config.get(i))) {
-                    newConfig.add(config.get(i));
-                }
-            } catch (NullPointerException ignored) {}
+            if (graph.hasConflictingColor(config.get(i))) {
+                conflictingNodes.add(config.get(i));
+            }
         }
     }
 }
