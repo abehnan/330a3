@@ -77,13 +77,10 @@ class Main {
             for (ConflictThread t : threads) {
                 try {
                     t.join();
+                    newConfig.addAll(t.getConflictingNodes());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            }
-            // combine all the threads' configurations
-            for(ConflictThread t : threads) {
-                newConfig.addAll(t.getConflictingNodes());
             }
         }
         return newConfig;
