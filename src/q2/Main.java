@@ -60,6 +60,7 @@ class Main {
             thread.start();
             try {
                 thread.join();
+                newConfig.addAll(thread.getConflictingNodes());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
