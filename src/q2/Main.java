@@ -54,7 +54,7 @@ class Main {
     // multithreaded detectConflicts algorithm
     private static ArrayList<Integer> detectConflicts(Graph graph, int numThreads, ArrayList<Integer> refs) {
 
-        ArrayList<Integer> newConfig = new ArrayList<>(graph.getSize());
+        ArrayList<Integer> newConfig = new ArrayList<>();
         if (numThreads == 1) {
             ConflictThread thread = new ConflictThread(graph, refs, 0, refs.size());
             thread.start();
@@ -130,9 +130,9 @@ class Main {
         while (conflicting.size() > 0) {
             System.out.println("\nsize of conflicting set: " + conflicting.size());
             System.out.println("assign iteration #" + i);
-            assign(graph, n, conflicting);
+            assign(graph, t, conflicting);
             System.out.println("detectConflicts iteration #" + i++);
-            conflicting = detectConflicts(graph, n, conflicting);
+            conflicting = detectConflicts(graph, t, conflicting);
         }
         long totalTime = System.currentTimeMillis() - startTime;
 
