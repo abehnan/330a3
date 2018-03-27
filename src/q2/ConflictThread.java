@@ -2,9 +2,6 @@ package q2;
 
 import java.util.ArrayList;
 
-/*If you find that the synchronization on every operation has too much overhead, the next alternative is to give each thread its own private ArrayList, and then periodically, or at the end, dump the contents of the private ArrayLists into the main ArrayList.
-* */
-
 class ConflictThread extends Thread {
     private final Graph graph;
     private final ArrayList<Integer> config;
