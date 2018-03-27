@@ -53,19 +53,17 @@ class Main {
 
     // multithreaded detectConflicts algorithm
     private static ArrayList<Integer> detectConflicts(Graph graph, int numThreads, ArrayList<Integer> refs) {
-
-        ArrayList<Integer> newConfig = new ArrayList<>();
         if (numThreads == 1) {
             ConflictThread thread = new ConflictThread(graph, refs, 0, refs.size());
             thread.start();
             try {
                 thread.join();
-                newConfig.addAll(thread.getConflictingNodes());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
+            return thread.getConflictingNodes();
         } else {
+            ArrayList<Integer> newConfig = new ArrayList<>();
             ArrayList<ConflictThread> threads = new ArrayList<>(numThreads);
             int sublistSize = refs.size() / numThreads + 1;
             for (int start = 0; start < refs.size(); start += sublistSize) {
@@ -78,13 +76,13 @@ class Main {
             for (ConflictThread t : threads) {
                 try {
                     t.join();
-                    newConfig.addAll(t.getConflictingNodes());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                newConfig.addAll(t.getConflictingNodes());
             }
+            return newConfig;
         }
-        return newConfig;
     }
 
     public static void main(String[] args) {
