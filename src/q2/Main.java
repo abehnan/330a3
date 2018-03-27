@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
-public class Main {
+class Main {
 
     // partitions an ArrayLists of integers into n ArrayLists
     private static ArrayList<ArrayList<Integer>> partitionReferences(ArrayList<Integer> aList, int n) {
@@ -28,12 +28,8 @@ public class Main {
     private static int getRefArraySize(AtomicReferenceArray<Integer> refs) {
         int size = 0;
         for (int i = 0; i < refs.length(); i++) {
-            try {
-                refs.get(i);
-            } catch (NullPointerException e) {
-                continue;
-            }
-            size++;
+            if (refs.get(i) != null)
+                size++;
         }
         return size;
     }
@@ -86,16 +82,17 @@ public class Main {
         ArrayList<ArrayList<Integer>> threadConfigs = partitionReferences(refArrayList, numThreads);
 
         // start conflict threads
-        AtomicReferenceArray<Integer> newRefs = new AtomicReferenceArray<>(refs.length());
         ArrayList<ConflictThread> conflictThreads = new ArrayList<>(numThreads);
+        ArrayList<Integer> newConfig = new ArrayList<>();
         ConflictThread.resetNewConfigIndex();
         for (int i = 0; i < threadConfigs.size(); i++) {
+            // convert ArrayList to AtomicReferenceArray
             Integer[] refArray = new Integer[threadConfigs.get(i).size()];
             for (int j = 0; j < refArray.length; j++) {
                 refArray[j] = threadConfigs.get(i).get(j);
             }
             AtomicReferenceArray<Integer> config = new AtomicReferenceArray<>(refArray);
-            conflictThreads.add(new ConflictThread(graph, config, getRefArraySize(config), newRefs));
+            conflictThreads.add(new ConflictThread(graph, config, getRefArraySize(config), newConfig));
             conflictThreads.get(i).start();
         }
 
@@ -108,13 +105,18 @@ public class Main {
             }
         }
 
-        return newRefs;
+        // convert resulting ArrayList to AtomicReferenceArray and return
+        Integer[] refArray = new Integer[newConfig.size()];
+        for (int j = 0; j < refArray.length; j++) {
+            refArray[j] = newConfig.get(j);
+        }
+        return new AtomicReferenceArray<>(refArray);
     }
 
     // adds e random edges to graph
     private static void addEdges(Graph graph, int e) {
-        int edgeCount = 0;
-        while (edgeCount < e) {
+        int count = 0;
+        while (count < e) {
             int srcNode = ThreadLocalRandom.current().nextInt(graph.getSize());
             int destNode = srcNode;
             while (destNode == srcNode) {
@@ -123,7 +125,7 @@ public class Main {
             if (!graph.addEdge(srcNode, destNode)) {
                 continue;
             }
-            edgeCount++;
+            count++;
         }
     }
 
@@ -152,9 +154,12 @@ public class Main {
         }
         System.out.println("running q2 with arguments n=" + n + " e=" + e + " t=" + t);
 
+
         // construct graph
+        System.out.print("constructing graph...");
         Graph graph = new Graph(n);
         addEdges(graph, e);
+        System.out.println("done!\n");
 
         // set up initial conflicting node set
         AtomicReferenceArray<Integer> conflicting = new AtomicReferenceArray<>(graph.getSize());
@@ -164,15 +169,22 @@ public class Main {
 
         // color graph
         long startTime = System.currentTimeMillis();
+        int i = 0;
         while (getRefArraySize(conflicting) > 0) {
+            System.out.println("size of conflicting set: " + getRefArraySize(conflicting));
+            System.out.println("assign iteration #" + i);
             assign(graph, n, conflicting);
+            System.out.println("detectConflicts iteration #" + i++);
             conflicting = detectConflicts(graph, n, conflicting);
         }
         long totalTime = System.currentTimeMillis() - startTime;
 
         // output
-        System.out.println("total running time: " + totalTime);
+        System.out.println();
+        System.out.println("size of graph: " + graph.getSize());
+        System.out.println("number of edges: " + graph.getNumEdges());
         System.out.println("max degree: " + graph.getMaxDegree());
         System.out.println("max color: " + graph.getMaxColor());
+        System.out.println("total running time: " + totalTime);
     }
 }

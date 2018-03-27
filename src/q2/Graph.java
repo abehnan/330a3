@@ -38,6 +38,7 @@ class Graph {
         nodes.get(nodeID).setColor(getSmallestNodeColor(nodeID));
     }
 
+    // returns true if the node has the same color as any adjacent node with a lower id
     public boolean hasConflictingColor(int nodeID) {
         ArrayList<Integer> adjNodes = adjArray.get(nodeID);
         for (Integer adjNodeID : adjNodes) {
@@ -52,13 +53,38 @@ class Graph {
         return nodes.get(nodeID).getColor();
     }
 
+    public int getNumEdges() {
+        int count = 0;
+        for (ArrayList<Integer> aList : adjArray) {
+            count += aList.size();
+        }
+        // divide by two because we store edges both ways in this implementation
+        return count / 2;
+    }
+
     public int getMaxDegree() {
         int maxDegree = 0;
-        for (ArrayList<Integer> aList : adjArray) {
-            if (aList.size() > maxDegree) {
-                maxDegree = aList.size();
+        int id = -1;
+        for (int i = 0; i < adjArray.size(); i++) {
+            if (adjArray.get(i).size() > maxDegree) {
+                maxDegree = adjArray.get(i).size();
+                id = i;
             }
         }
+
+        // debug
+        System.out.println("node with max degree: " + id);
+        System.out.println("node color: " + getNodeColor(id));
+        System.out.println("adjacent nodes: " + adjArray.get(id));
+        System.out.print("adjacent colors: [");
+        for (int i = 0; i < adjArray.get(id).size(); i++) {
+            System.out.print(getNodeColor(adjArray.get(id).get(i)));
+            if (i < adjArray.get(id).size() - 1) {
+                System.out.print(", ");
+            }
+        }
+        System.out.println("]");
+
         return maxDegree;
     }
 
