@@ -2,7 +2,7 @@ package q1.LockFreeUnboundedQueue;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-// used to create threads that will continuously enqueue items to a BlockingQueue
+// used to create threads that will continuously enqueue items to a LockFreeQueue
 // stops running when flag is set to false
 class EnqThread extends Thread {
     private final LockFreeQueue<Integer> queue;

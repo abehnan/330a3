@@ -2,7 +2,7 @@ package q1.LockFreeUnboundedQueue;
 
 import java.util.Vector;
 
-// used to create threads that dequeue a specified number of items from a blocking queue
+// used to create threads that dequeue a specified number of items from a LockFreeQueue
 // adds dequeued nodes to resultList
 class DeqThread extends Thread {
     private final LockFreeQueue<Integer> queue;
