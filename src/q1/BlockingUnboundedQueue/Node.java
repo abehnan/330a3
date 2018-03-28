@@ -1,6 +1,7 @@
 package q1.BlockingUnboundedQueue;
 
-public class Node<T> {
+// represents a node contained in a BlockingQueue
+class Node<T> {
     private final T value;
     private long  enqTime;
     private long deqTime;
@@ -11,31 +12,31 @@ public class Node<T> {
         next = null;
     }
 
-    public long getEnqTime() {
+    long getEnqTime() {
         return enqTime;
     }
 
-    public void setEnqTime(long enqTime) {
+    void setEnqTime(long enqTime) {
         this.enqTime = enqTime;
     }
 
-    public long getDeqTime() {
+    long getDeqTime() {
         return deqTime;
     }
 
-    public void setDeqTime(long deqTime) {
+    void setDeqTime(long deqTime) {
         this.deqTime = deqTime;
     }
 
-    public T getValue() {
+    T getValue() {
         return value;
     }
 
-    public Node<T> getNext() {
+    Node<T> getNext() {
         return next;
     }
 
-    public void setNext(Node<T> next) {
+    void setNext(Node<T> next) {
         this.next = next;
     }
 }

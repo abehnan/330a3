@@ -2,6 +2,7 @@ package q1.BlockingUnboundedQueue;
 
 import java.util.concurrent.locks.ReentrantLock;
 
+// implementation of an unbounded, thread-safe(blocking) queue
 class BlockingQueue<T> {
     private final ReentrantLock enqLock;
     private final ReentrantLock deqLock;
@@ -14,7 +15,8 @@ class BlockingQueue<T> {
         deqLock = new ReentrantLock();
     }
 
-    public void enq(T value) {
+    // adds an item to the front of the queue
+    void enq(T value) {
         enqLock.lock();
         try {
             Node<T> e = new Node<>(value);
@@ -26,7 +28,8 @@ class BlockingQueue<T> {
         }
     }
 
-    public Node<T> deq() throws Exception {
+    // remove the item at the end of the queue
+    Node<T> deq() throws Exception {
         Node<T> result;
         deqLock.lock();
         try {
