@@ -1,0 +1,157 @@
+------------------------------------
+Question 1
+------------------------------------
+Times shown below are in milliseconds.
+
+p=q=2 n=250
+BlockingQueue run 1: 2784
+BlockingQueue run 2: 2723
+BlockingQueue run 3: 2814
+BlockingQueue run 4: 2850
+BlockingQueue run 5: 2808
+BlockingQueue run 6: 2737
+BlockingQueue run 7: 2802
+BlockingQueue run 8: 2767
+BlockingQueue run 9: 2865
+BlockingQueue run 10: 2785
+LockFreeQueue run 1: 2892
+LockFreeQueue run 2: 2930
+LockFreeQueue run 3: 2915
+LockFreeQueue run 4: 2925
+LockFreeQueue run 5: 2897
+LockFreeQueue run 6: 2933
+LockFreeQueue run 7: 2927
+LockFreeQueue run 8: 2962
+LockFreeQueue run 9: 2930
+LockFreeQueue run 10: 2956
+BlockingQueue average: 2794
+LockFreeQueue average: 2926
+Speed-up: -4.5%
+
+p=2 q=4 n=250
+BlockingQueue run 1: 5833
+BlockingQueue run 2: 5797
+BlockingQueue run 3: 6196
+BlockingQueue run 4: 5938
+BlockingQueue run 5: 6032
+BlockingQueue run 6: 5841
+BlockingQueue run 7: 5822
+BlockingQueue run 8: 5838
+BlockingQueue run 9: 5823
+BlockingQueue run 10: 5805
+LockFreeQueue run 1: 5923
+LockFreeQueue run 2: 5865
+LockFreeQueue run 3: 5786
+LockFreeQueue run 4: 5817
+LockFreeQueue run 5: 5945
+LockFreeQueue run 6: 5917
+LockFreeQueue run 7: 5788
+LockFreeQueue run 8: 5853
+LockFreeQueue run 9: 5865
+LockFreeQueue run 10: 5850
+BlockingQueue average: 5893
+LockFreeQueue average: 5861
+Speed-up: 0.5%
+
+p=2 q=6 n=250
+BlockingQueue run 1: 8951
+BlockingQueue run 2: 8870
+BlockingQueue run 3: 8909
+BlockingQueue run 4: 8985
+BlockingQueue run 5: 8832
+BlockingQueue run 6: 9140
+BlockingQueue run 7: 8824
+BlockingQueue run 8: 8866
+BlockingQueue run 9: 9013
+BlockingQueue run 10: 8896
+LockFreeQueue run 1: 9139
+LockFreeQueue run 2: 8953
+LockFreeQueue run 3: 8650
+LockFreeQueue run 4: 8970
+LockFreeQueue run 5: 8996
+LockFreeQueue run 6: 8845
+LockFreeQueue run 7: 9017
+LockFreeQueue run 8: 8831
+LockFreeQueue run 9: 8594
+LockFreeQueue run 10: 8851
+BlockingQueue average: 8929
+LockFreeQueue average: 8885
+Speed-up: 0.5%
+
+p=2 q=8 n=250
+BlockingQueue run 1: 11766
+BlockingQueue run 2: 11712
+BlockingQueue run 3: 11998
+BlockingQueue run 4: 11681
+BlockingQueue run 5: 11996
+BlockingQueue run 6: 12144
+BlockingQueue run 7: 11943
+BlockingQueue run 8: 12008
+BlockingQueue run 9: 11938
+BlockingQueue run 10: 11401
+LockFreeQueue run 1: 11753
+LockFreeQueue run 2: 11651
+LockFreeQueue run 3: 11653
+LockFreeQueue run 4: 11624
+LockFreeQueue run 5: 11736
+LockFreeQueue run 6: 11724
+LockFreeQueue run 7: 11620
+LockFreeQueue run 8: 11622
+LockFreeQueue run 9: 11654
+LockFreeQueue run 10: 11653
+BlockingQueue average: 11859
+LockFreeQueue average: 11669
+Speed-up: 1.6%
+
+The textbook claims that the lock-free implementation of the queue is substantially faster.
+Based on the results observed, we can notice that there was actually an decrease in performance when p=q=2.
+This might be because although the lock-free implementation requires less context-switches, we are
+not guaranteed that the threads are making any meaningful progress while they are spinning.
+However, in the blocking implementation of the queue we can rest assured that the threads are making progress
+while they are active.
+That said, there is a small performance improvement when there are more dequeue threads than enqueue threads.
+In fact, the speed-up seems to be correlated with the ratio of dequeue threads over enqueue threads.
+Therefore, I am inclined to agree with the textbook that the lock-free implementation is faster than the blocking
+implementation but only in situations where the dequeue/enqueue ratio is large.
+
+------------------------------------
+Question 2
+------------------------------------
+Times shown below are in milliseconds.
+The speed-up values are calculated compared to the avg runtime where t=1.
+
+n=1,000,000 q=20,000,000 t=1
+run 1: 15023
+run 2: 16080
+run 3: 14756
+run 4: 17744
+run 5: 15882
+avg: 15897
+speed-up: n/a
+
+n=1,000,000 q=20,000,000 t=2
+run 1: 11535
+run 2: 11050
+run 3: 10781
+run 4: 11201
+run 5: 11519
+avg: 11217
+speed-up: 41%
+
+n=1,000,000 q=20,000,000 t=4
+run 1: 10281
+run 2: 9959
+run 3: 10419
+run 4: 10489
+run 5: 10287
+avg: 10287
+speed-up: 54%
+
+n=1,000,000 q=20,000,000 t=8
+run 1: 10882
+run 2: 10275
+run 3: 10837
+run 4: 11415
+run 5: 10784
+avg: 10839
+speed-up: 47%

@@ -22,9 +22,9 @@ class Main {
     }
 
     // multithreaded assign algorithm
-    private static void assign(Graph graph, int numThreads, ArrayList<Integer> refs) {
+    private static void assign(Graph graph, int numThreads, ArrayList<Integer> workingSet) {
         if (numThreads == 1) {
-            AssignThread thread = new AssignThread(graph, refs, 0, refs.size());
+            AssignThread thread = new AssignThread(graph, workingSet, 0, workingSet.size());
             thread.start();
             try {
                 thread.join();
@@ -33,17 +33,17 @@ class Main {
             }
         } else {
             ArrayList<AssignThread> threads = new ArrayList<>(numThreads);
-            int sublistSize = refs.size() / numThreads + 1;
-            for (int start = 0; start < refs.size(); start += sublistSize) {
-                int end = Math.min(start + sublistSize, refs.size());
-                threads.add(new AssignThread(graph, refs, start, end));
+            int sublistSize = workingSet.size() / numThreads + 1;
+            for (int start = 0; start < workingSet.size(); start += sublistSize) {
+                int end = Math.min(start + sublistSize, workingSet.size());
+                threads.add(new AssignThread(graph, workingSet, start, end));
             }
-            for (AssignThread t : threads) {
-                t.start();
+            for (AssignThread thread : threads) {
+                thread.start();
             }
-            for (AssignThread t : threads) {
+            for (AssignThread thread : threads) {
                 try {
-                    t.join();
+                    thread.join();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -52,9 +52,9 @@ class Main {
     }
 
     // multithreaded detectConflicts algorithm
-    private static ArrayList<Integer> detectConflicts(Graph graph, int numThreads, ArrayList<Integer> refs) {
+    private static ArrayList<Integer> detectConflicts(Graph graph, int numThreads, ArrayList<Integer> workingSet) {
         if (numThreads == 1) {
-            ConflictThread thread = new ConflictThread(graph, refs, 0, refs.size());
+            ConflictThread thread = new ConflictThread(graph, workingSet, 0, workingSet.size());
             thread.start();
             try {
                 thread.join();
@@ -63,25 +63,25 @@ class Main {
             }
             return thread.getConflictingNodes();
         } else {
-            ArrayList<Integer> newConfig = new ArrayList<>();
+            ArrayList<Integer> conflictingNodes = new ArrayList<>();
             ArrayList<ConflictThread> threads = new ArrayList<>(numThreads);
-            int sublistSize = refs.size() / numThreads + 1;
-            for (int start = 0; start < refs.size(); start += sublistSize) {
-                int end = Math.min(start + sublistSize, refs.size());
-                threads.add(new ConflictThread(graph, refs, start, end));
+            int sublistSize = workingSet.size() / numThreads + 1;
+            for (int start = 0; start < workingSet.size(); start += sublistSize) {
+                int end = Math.min(start + sublistSize, workingSet.size());
+                threads.add(new ConflictThread(graph, workingSet, start, end));
             }
-            for (ConflictThread t : threads) {
-                t.start();
+            for (ConflictThread thread : threads) {
+                thread.start();
             }
-            for (ConflictThread t : threads) {
+            for (ConflictThread thread : threads) {
                 try {
-                    t.join();
+                    thread.join();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                newConfig.addAll(t.getConflictingNodes());
+                conflictingNodes.addAll(thread.getConflictingNodes());
             }
-            return newConfig;
+            return conflictingNodes;
         }
     }
 
@@ -111,7 +111,7 @@ class Main {
 
 
         // construct graph
-        System.out.print("constructing graph...");
+        System.out.print("constructing graph (this may take a while)...");
         Graph graph = new Graph(n);
         addEdges(graph, e);
         System.out.println("done!");
