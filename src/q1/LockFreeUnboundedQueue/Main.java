@@ -2,11 +2,11 @@ package q1.LockFreeUnboundedQueue;
 
 class Main {
     public static void main(String args[]) {
-
         LockFreeQueue<Integer> queue = new LockFreeQueue<>();
         int p = -1, q = -1, n = -1;
         long startTime;
 
+        // check args
         try {
             if (args.length < 3)
                 throw new Exception("Missing arguments, only "+args.length+" were specified!");
@@ -19,6 +19,7 @@ class Main {
             e.printStackTrace();
         }
 
+        // start enqueue threads
         startTime = System.currentTimeMillis();
         EnqThread[] enqThreads = new EnqThread[p];
         for (int i = 0; i < enqThreads.length; i++) {
@@ -26,12 +27,14 @@ class Main {
             enqThreads[i].start();
         }
 
+        // start dequeue threads
         DeqThread[] deqThreads = new DeqThread[q];
         for (int i = 0; i <deqThreads.length; i++) {
             deqThreads[i] = new DeqThread(queue, n);
             deqThreads[i].start();
         }
 
+        // join dequeue threads
         for (DeqThread dt : deqThreads) {
             try {
                 dt.join();
@@ -40,7 +43,10 @@ class Main {
             }
         }
 
+        // kill enqueue threads
         EnqThread.flag = false;
+
+        // output
         long totalTime = System.currentTimeMillis() - startTime;
         DeqThread.printValues();
         System.out.println("total running time: " + totalTime);

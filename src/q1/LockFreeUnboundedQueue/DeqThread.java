@@ -1,10 +1,12 @@
 package q1.LockFreeUnboundedQueue;
 
-import java.util.LinkedList;
+import java.util.Vector;
 
+// used to create threads that dequeue a specified number of items from a blocking queue
+// adds dequeued nodes to resultList
 class DeqThread extends Thread {
     private final LockFreeQueue<Integer> queue;
-    private static final LinkedList<Node<Integer>> resultList = new LinkedList<>();
+    private static final Vector<Node<Integer>> resultList = new Vector<>();
     private final int numItems;
     private int count;
 
@@ -18,28 +20,27 @@ class DeqThread extends Thread {
         Node<Integer> result;
         while (count < numItems) {
             try {
-                result = queue.deq();
-            } catch(Exception e) {
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException ex) {
-                    e.printStackTrace();
-                }
-                continue;
-            }
-            count++;
-            resultList.add(result);
-            try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            try {
+                result = queue.deq();
+            } catch(Exception e) {
+                continue;
+            }
+            count++;
+            resultList.add(result);
+
         }
     }
 
-    public static void printValues() {
+    // prints out operations performed on nodes from all DeqThreads in increasing chronological order
+    // not thread-safe
+    static void printValues() {
         int enqPointer = 0, deqPointer = 0;
         System.out.println("[timestamp] [operation] [id]");
+        // initial case: enqueue and dequeue operations remaining
         while (enqPointer < resultList.size() && deqPointer < resultList.size()) {
             long enqTime, deqTime;
             try {
@@ -64,6 +65,7 @@ class DeqThread extends Thread {
             }
 
         }
+        // if there are still enqueue operations remaining
         while (enqPointer < resultList.size() && deqPointer >= resultList.size()) {
             try {
                 System.out.println(resultList.get(enqPointer).getEnqTime() + " enq " + resultList.get(enqPointer).getValue());
@@ -72,6 +74,7 @@ class DeqThread extends Thread {
                 enqPointer++;
             }
         }
+        // if there are still dequeue operations remaining
         while(enqPointer >= resultList.size() && deqPointer < resultList.size()) {
             try {
                 System.out.println(resultList.get(deqPointer).getDeqTime() + " deq " + resultList.get(deqPointer).getValue());

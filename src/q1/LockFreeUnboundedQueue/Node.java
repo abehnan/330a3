@@ -2,7 +2,8 @@ package q1.LockFreeUnboundedQueue;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public class Node<T> {
+// represents a node contained in a LockFreeQueue
+class Node<T> {
     private final T value;
     private long  enqTime;
     private long deqTime;
@@ -13,27 +14,27 @@ public class Node<T> {
         next = new AtomicReference<>(null);
     }
 
-    public long getEnqTime() {
+    long getEnqTime() {
         return enqTime;
     }
 
-    public void setEnqTime(long enqTime) {
+    void setEnqTime(long enqTime) {
         this.enqTime = enqTime;
     }
 
-    public long getDeqTime() {
+    long getDeqTime() {
         return deqTime;
     }
 
-    public void setDeqTime(long deqTime) {
+    void setDeqTime(long deqTime) {
         this.deqTime = deqTime;
     }
 
-    public T getValue() {
+    T getValue() {
         return value;
     }
 
-    public AtomicReference<Node<T>> getNext() {
+    AtomicReference<Node<T>> getNext() {
         return next;
     }
 

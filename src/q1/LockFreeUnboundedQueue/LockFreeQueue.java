@@ -2,6 +2,7 @@ package q1.LockFreeUnboundedQueue;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+// implementation of an unbounded, thread-safe non-blocking queue
 class LockFreeQueue<T> {
     private final AtomicReference<Node<T>> head;
     private final AtomicReference<Node<T>> tail;
@@ -12,7 +13,8 @@ class LockFreeQueue<T> {
         tail = new AtomicReference<>(sentinel);
     }
 
-    public void enq(T value) {
+    // adds an item to the front of the queue
+    void enq(T value) {
         Node<T> node = new Node<>(value);
         while (true) {
             Node<T> last = tail.get();
@@ -31,7 +33,8 @@ class LockFreeQueue<T> {
         }
     }
 
-    public Node<T> deq() throws Exception {
+    // remove the item at the end of the queue
+    Node<T> deq() throws Exception {
         while(true) {
             Node<T> first = head.get();
             Node<T> last = tail.get();
